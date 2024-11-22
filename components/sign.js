@@ -5,7 +5,7 @@ import { use, useState } from "react";
 export default function Sign() {
     const [idValue, setIdValue] = useState("");
     const [pwValue, setPwValue] = useState("");
-    const [userNameVAlue, setUserNameValue] = useState();
+    const [userNameValue, setUserNameValue] = useState();
     const [pwCheckValue, setPwCheckValue] = useState("");
     const [showPwField, setShowPwField] = useState(false);
     const [showPwCheckField, setShowPwCheckField] = useState(false);
@@ -72,15 +72,35 @@ export default function Sign() {
     }
     const handleUserNameChange = (event) => {
         const value = event.target.value;
-        if (value.lenth >=0) {
+        
+        if (value.length >=0) {
             setUserNameValue(value);
+            console.log(value);
         }
     }
-    const handleSubmit = (event) => {
-        if (!idError && !pwError && !pwCheckError && userNameVAlue >0) {
-            alert("회원가입 완료")
-        }else{
-            alert("모든 입력란을 올바르게 작성해 주십시오.");
+    const handleSubmit = async () => {
+        console.log(userNameValue, idValue, pwValue);
+        try {
+            
+            const response = await fetch("/api/register", {
+                method : "POST",
+                headers : {
+                    "Content-Type" : "application/json",
+                },
+                body : JSON.stringify({
+                    username : userNameValue,
+                    userId : idValue,
+                    password : pwValue,
+                }),
+            });
+            const data = await response.json();
+            if (response.ok) {
+                alert("회원가입 완료");
+            }else {
+                alert("회원가입 실패");
+            }
+        } catch (error) {
+            console.log("회원가입 실패: ", error);
         }
     }
     return(
@@ -93,7 +113,7 @@ export default function Sign() {
                         label="Username"
                         placeholder="닉네임"
                         helperText="사용하실 닉네임을 입력해주세요."
-                        value={userNameVAlue}
+                        value={userNameValue}
                         onChange={handleUserNameChange}
                         fullWidth
                     ></TextField>
